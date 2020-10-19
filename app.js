@@ -1,10 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const date = require(express.static( __dirname+"\\date.js"));
+//const date = require(__dirname + "\\date.js");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const app = express();
 
+function getDay(){
+var today = new Date();
+
+var options = {
+  weekday: "long",
+};
+
+day = today.toLocaleDateString("en-US", options);
+return day;
+}
 
 app.set("view engine", "ejs");
 
@@ -55,7 +65,7 @@ app.get("/", function(req, res){
       //   }
       // });
     }
-    let day = date.getDay();
+    let day = getDay();
     res.render("list",{listTitle:day, newListItems:defaultItems});
   });
 
@@ -94,7 +104,7 @@ let title = req.body.list;
 itemi = new Item({
   name: item
 });
-if(title === date.getDay()){
+if(title === getDay()){
   console.log("Saving in root list");
   itemi.save();
   res.redirect("/");
@@ -103,7 +113,7 @@ if(title === date.getDay()){
         //display existing list
       }
       else{
-        console.log(title, date.getDay());
+        console.log(title, getDay());
         List.findOne({name: title}, function(err, foundItemList){
           if(foundItemList){
               foundItemList.items.push(itemi);
@@ -138,7 +148,7 @@ app.post("/delete", function(req, res){
   let checkedItem = req.body.checkbox;
   let listName = req.body.listName;
   //console.log(checkedItem);
-  if(listName === date.getDay()){
+  if(listName === getDay()){
   Item.findByIdAndRemove(checkedItem, function(err){
     if(err){
       console.log(error);
@@ -161,5 +171,5 @@ if (port == null || port == "") {
   port = 3000;
 }
 app.listen(port,function(){
-  console.log("Server started on port" + port);
+  console.log("Server started on " + port);
 });
